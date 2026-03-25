@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment - never commit, install.sh recreates it
+venv/
+
+# SQLite database - runtime data, not source
+nodes.db
+
+# Reticulum runtime storage - contains cryptographic identity keys,
+# packet caches, routing tables. Machine-specific, never commit.
+reticulum-config/storage/
+
+# Backup files created during editing
+static/*.bak
+static/*.bak2
+
+# Editor / OS artefacts
+.DS_Store
+*.swp
+*~

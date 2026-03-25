@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>raspi30 — Notes</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg:       #0a0a10;
+    --bg2:      #0d0d18;
+    --bg3:      #0f0f1e;
+    --border:   #1a1a2a;
+    --border2:  #252540;
+    --text:     #ccc;
+    --muted:    #555;
+    --dim:      #2a2a3a;
+    --accent:   #4af;
+    --green:    #4a8;
+    --red:      #c44;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: monospace;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Title bar ─────────────────────────────── */
+#titlebar {
+    height: 48px;
+    flex-shrink: 0;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 10px;
+}
+#titlebar h1 {
+    font-size: 13px;
+    font-weight: normal;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+}
+#search-wrap {
+    flex: 1;
+    position: relative;
+    max-width: 340px;
+}
+#search {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--text);
+    font-family: monospace;
+    font-size: 12px;
+    padding: 6px 28px 6px 10px;
+    outline: none;
+    transition: border-color 0.15s;
+}
+#search:focus { border-color: var(--dim); }
+#search::placeholder { color: #222; }
+#search-clear {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    font-size: 14px;
+    display: none;
+    padding: 0 2px;
+}
+#search-clear.visible { display: block; }
+#search-clear:hover { color: var(--muted); }
+
+#new-btn {
+    background: var(--bg3);
+    border: 1px solid #1a3a5a;
+    border-radius: 5px;
+    color: var(--accent);
+    font-family: monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+#new-btn:hover { background: #111a28; border-color: #2a5a8a; }
+#save-status {
+    font-size: 10px;
+    color: var(--green);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    min-width: 48px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+/* ── Main layout ───────────────────────────── */
+#layout {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ── Sidebar / list panel ──────────────────── */
+#list-panel {
+    width: 300px;
+    flex-shrink: 0;
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+#list-header {
+    padding: 8px 12px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #1e1e2e;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+}
+#list-count { color: #2a2a3a; }
+#note-list {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+#no-results {
+    padding: 24px 12px;
+    font-size: 10px;
+    color: #1e1e2e;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+    display: none;
+}
+
+.note-card {
+    padding: 11px 12px;
+    border-bottom: 1px solid #0f0f18;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.1s;
+}
+.note-card:hover { background: #0d0d1a; }
+.note-card.active { background: #0d1220; border-left: 2px solid var(--accent); padding-left: 10px; }
+.note-card-title {
+    font-size: 12px;
+    color: #999;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+}
+.note-card.active .note-card-title { color: #ccc; }
+.note-card-preview {
+    font-size: 10px;
+    color: #2a2a38;
+    line-height: 1.5;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.note-card-date {
+    font-size: 9px;
+    color: #1a1a28;
+    margin-top: 5px;
+    letter-spacing: 0.5px;
+}
+.note-card-del {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: transparent;
+    border: none;
+    color: #1a1a28;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    display: none;
+    line-height: 1;
+}
+.note-card:hover .note-card-del,
+.note-card.active .note-card-del { display: block; }
+.note-card-del:hover { color: var(--red); background: #1a0808; }
+
+/* Search highlight */
+mark {
+    background: #1a3a1a;
+    color: #6cf;
+    border-radius: 2px;
+    padding: 0 1px;
+}
+
+/* ── Editor panel ──────────────────────────── */
+#editor-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+}
+#editor-placeholder {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #1e1e2e;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+#editor-wrap {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+}
+#editor-wrap.visible { display: flex; }
+#editor-meta {
+    padding: 8px 16px 0;
+    font-size: 9px;
+    color: #1e1e2e;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#back-btn {
+    display: none;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--muted);
+    font-family: monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+#back-btn:hover { color: var(--text); border-color: var(--dim); }
+#editor-body {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #bbb;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    padding: 14px 16px;
+    resize: none;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+#editor-body:focus { color: var(--text); }
+#editor-body::placeholder { color: #1e1e2e; }
+
+/* ── Delete modal ──────────────────────────── */
+#del-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+}
+#del-modal.visible { display: flex; }
+#del-box {
+    background: #100808;
+    border: 1px solid #4a1a1a;
+    border-radius: 8px;
+    padding: 28px 32px;
+    text-align: center;
+    width: min(320px, 90vw);
+}
+#del-box p { font-size: 12px; color: #666; margin-bottom: 20px; letter-spacing: 1px; }
+.del-buttons { display: flex; gap: 12px; justify-content: center; }
+.del-btn {
+    padding: 9px 22px;
+    border-radius: 5px;
+    font-family: monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid;
+    background: transparent;
+}
+.del-cancel  { border-color: #333; color: #555; }
+.del-cancel:hover { border-color: #555; color: #888; }
+.del-confirm { border-color: #7a1a1a; color: var(--red); }
+.del-confirm:hover { background: #1a0808; }
+
+/* ── Mobile ────────────────────────────────── */
+@media (max-width: 600px) {
+    #titlebar h1 { display: none; }
+    #list-panel {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        z-index: 5;
+        background: var(--bg);
+    }
+    #list-panel.hidden { transform: translateX(-100%); }
+    #editor-panel {
+        position: absolute;
+        inset: 0;
+        z-index: 4;
+    }
+    #back-btn { display: block; }
+    #save-status { display: none; }
+    #new-btn { padding: 7px 10px; font-size: 10px; }
+}
+
+::-webkit-scrollbar       { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div id="titlebar">
+    <h1>&#9632; Notes</h1>
+    <div id="search-wrap">
+        <input id="search" type="search" placeholder="Search notes…" autocomplete="off" oninput="onSearch()">
+        <button id="search-clear" onclick="clearSearch()">&#10005;</button>
+    </div>
+    <span id="save-status"></span>
+    <button id="new-btn" onclick="newNote()">+ New</button>
+</div>
+
+<div id="layout">
+
+    <div id="list-panel">
+        <div id="list-header">
+            <span>Notes</span>
+            <span id="list-count"></span>
+        </div>
+        <div id="note-list">
+            <div id="no-results">No matches</div>
+        </div>
+    </div>
+
+    <div id="editor-panel">
+        <div id="editor-placeholder">Select or create a note</div>
+        <div id="editor-wrap">
+            <div id="editor-meta">
+                <button id="back-btn" onclick="showList()">&#8592; Back</button>
+                <span id="editor-date"></span>
+            </div>
+            <textarea id="editor-body" placeholder="Start typing…" spellcheck="false"></textarea>
+        </div>
+    </div>
+
+</div>
+
+<div id="del-modal">
+    <div id="del-box">
+        <p>Delete this note?</p>
+        <div class="del-buttons">
+            <button class="del-btn del-cancel" onclick="hideDel()">Cancel</button>
+            <button class="del-btn del-confirm" onclick="confirmDel()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<script>
+'use strict';
+
+let notes     = [];
+let activeId  = null;
+let saveTimer = null;
+let delTarget = null;
+let query     = '';
+
+const isMobile = () => window.innerWidth <= 600;
+
+// ── Utilities ─────────────────────────────────
+function escHtml(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function highlight(text, q) {
+    if (!q) return escHtml(text);
+    const safe = escHtml(text);
+    const pat  = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
+    return safe.replace(pat, '<mark>$1</mark>');
+}
+function titleOf(text) {
+    const first = (text||'').trim().split('\n')[0];
+    return first.length > 0 ? first.substring(0, 60) : 'Untitled';
+}
+function previewOf(text) {
+    const lines = (text||'').trim().split('\n');
+    return lines.slice(1).join(' ').trim().substring(0, 100);
+}
+function fmtDate(ts) {
+    if (!ts) return '';
+    return new Date(ts).toLocaleString('de-DE', {
+        day:'2-digit', month:'2-digit', year:'2-digit',
+        hour:'2-digit', minute:'2-digit'
+    });
+}
+function setStatus(msg) {
+    document.getElementById('save-status').textContent = msg;
+}
+
+// ── API ───────────────────────────────────────
+async function apiLoad() {
+    try {
+        const r = await fetch('/api/notes');
+        notes = r.ok ? await r.json() : [];
+    } catch { notes = []; }
+    notes.sort((a,b) => b.updated - a.updated);
+    renderList();
+}
+async function apiCreate() {
+    try {
+        const r = await fetch('/api/notes', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({text:''}),
+        });
+        return r.ok ? await r.json() : null;
+    } catch { return null; }
+}
+async function apiSave(note) {
+    try {
+        const r = await fetch(`/api/notes/${note.id}`, {
+            method:'PUT',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify(note),
+        });
+        return r.ok;
+    } catch { return false; }
+}
+async function apiDelete(id) {
+    try { await fetch(`/api/notes/${id}`, {method:'DELETE'}); } catch {}
+}
+
+// ── Search ────────────────────────────────────
+function onSearch() {
+    query = document.getElementById('search').value.trim().toLowerCase();
+    document.getElementById('search-clear').classList.toggle('visible', query.length > 0);
+    renderList();
+}
+function clearSearch() {
+    document.getElementById('search').value = '';
+    query = '';
+    document.getElementById('search-clear').classList.remove('visible');
+    renderList();
+}
+function matchesQuery(note) {
+    if (!query) return true;
+    return (note.text||'').toLowerCase().includes(query);
+}
+
+// ── List ──────────────────────────────────────
+function renderList() {
+    const list    = document.getElementById('note-list');
+    const noRes   = document.getElementById('no-results');
+    const counter = document.getElementById('list-count');
+
+    // Remove all cards but keep #no-results
+    Array.from(list.children).forEach(c => { if (c.id !== 'no-results') c.remove(); });
+
+    const filtered = notes.filter(matchesQuery);
+    counter.textContent = query
+        ? `${filtered.length} / ${notes.length}`
+        : `${notes.length}`;
+
+    if (filtered.length === 0) {
+        noRes.style.display = 'block';
+        return;
+    }
+    noRes.style.display = 'none';
+
+    filtered.forEach(note => {
+        const card = document.createElement('div');
+        card.className = 'note-card' + (note.id === activeId ? ' active' : '');
+        card.id = `card-${note.id}`;
+
+        const title   = titleOf(note.text);
+        const preview = previewOf(note.text);
+
+        card.innerHTML =
+            `<div class="note-card-title">${highlight(title, query)}</div>` +
+            (preview ? `<div class="note-card-preview">${highlight(preview, query)}</div>` : '') +
+            `<div class="note-card-date">${fmtDate(note.updated)}</div>` +
+            `<button class="note-card-del" onclick="askDel('${note.id}',event)" title="Delete">&#10005;</button>`;
+
+        card.addEventListener('click', () => selectNote(note.id));
+        list.appendChild(card);
+    });
+}
+
+// ── Select ────────────────────────────────────
+function selectNote(id) {
+    activeId = id;
+    const note = notes.find(n => n.id === id);
+    if (!note) return;
+
+    document.getElementById('editor-placeholder').style.display = 'none';
+    document.getElementById('editor-wrap').classList.add('visible');
+    document.getElementById('editor-body').value = note.text;
+    document.getElementById('editor-date').textContent =
+        `${fmtDate(note.created)} · ${fmtDate(note.updated)}`;
+
+    renderList();
+
+    if (isMobile()) {
+        document.getElementById('list-panel').classList.add('hidden');
+    }
+    document.getElementById('editor-body').focus();
+}
+
+function showList() {
+    document.getElementById('list-panel').classList.remove('hidden');
+    activeId = null;
+    renderList();
+}
+
+// ── Edit ──────────────────────────────────────
+document.getElementById('editor-body').addEventListener('input', () => {
+    if (!activeId) return;
+    const note = notes.find(n => n.id === activeId);
+    if (!note) return;
+    note.text    = document.getElementById('editor-body').value;
+    note.updated = Date.now();
+    document.getElementById('editor-date').textContent =
+        `${fmtDate(note.created)} · ${fmtDate(note.updated)}`;
+    renderList();
+    setStatus('…');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(async () => {
+        const ok = await apiSave(note);
+        setStatus(ok ? 'saved' : 'err');
+        setTimeout(() => setStatus(''), 2000);
+    }, 1500);
+});
+
+// ── New ───────────────────────────────────────
+async function newNote() {
+    const note = await apiCreate();
+    if (!note) return;
+    notes.unshift(note);
+    clearSearch();
+    renderList();
+    selectNote(note.id);
+}
+
+// ── Delete ────────────────────────────────────
+function askDel(id, e) {
+    e.stopPropagation();
+    delTarget = id;
+    document.getElementById('del-modal').classList.add('visible');
+}
+function hideDel() {
+    document.getElementById('del-modal').classList.remove('visible');
+    delTarget = null;
+}
+async function confirmDel() {
+    if (!delTarget) return;
+    await apiDelete(delTarget);
+    notes = notes.filter(n => n.id !== delTarget);
+    if (activeId === delTarget) {
+        activeId = null;
+        document.getElementById('editor-placeholder').style.display = 'flex';
+        document.getElementById('editor-wrap').classList.remove('visible');
+        if (isMobile()) showList();
+    }
+    hideDel();
+    renderList();
+}
+
+// ── Keyboard shortcuts ────────────────────────
+document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+        e.preventDefault();
+        document.getElementById('search').focus();
+    }
+    if (e.key === 'Escape') {
+        clearSearch();
+        document.getElementById('search').blur();
+    }
+});
+
+// ── Init ──────────────────────────────────────
+apiLoad();
+</script>
+</body>
+</html>
