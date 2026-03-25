@@ -258,6 +258,16 @@ sudo usermod -aG dialout user
 ```
 Then log out and back in.
 
+**RNode not found — wrong port**
+RAK4631 and Heltec v3 normally appear as `/dev/ttyACM0`. Some RNode variants
+use `/dev/ttyUSB0` instead. Check which port is present with:
+```bash
+ls /dev/tty{ACM,USB}*
+```
+Then edit `~/.reticulum/config` and set the correct `port =` value.
+`setup-pi-2.sh` auto-detects the port at install time, but if you connect
+the RNode after running the script you may need to update the config manually.
+
 **All nodes appear on ring 1 of the RNS map**
 This means hop counts are not being read correctly. Check that rnsd is running
 and that rns-map started after rnsd (`journalctl -u rns-map -n 20`).

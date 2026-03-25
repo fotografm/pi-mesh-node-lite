@@ -65,7 +65,21 @@ echo "[3/10] Writing Reticulum config..."
 mkdir -p ~/.reticulum
 
 if [ ! -f ~/.reticulum/config ]; then
-    cat > ~/.reticulum/config << 'EOF'
+    # Detect RNode port — RAK4631 and Heltec v3 typically appear as ttyACM0,
+    # but some RNode devices use ttyUSB0. Check with: ls /dev/tty{ACM,USB}*
+    echo "    Checking for RNode device port..."
+    if [ -e /dev/ttyACM0 ]; then
+        RNODE_PORT="/dev/ttyACM0"
+    elif [ -e /dev/ttyUSB0 ]; then
+        RNODE_PORT="/dev/ttyUSB0"
+    else
+        RNODE_PORT="/dev/ttyACM0"
+        echo "    WARNING: No ttyACM0 or ttyUSB0 found. RNode may not be connected."
+        echo "    Edit ~/.reticulum/config after setup to set the correct port."
+    fi
+    echo "    Using RNode port: $RNODE_PORT"
+
+    cat > ~/.reticulum/config << EOF
 [reticulum]
   enable_transport = True
   share_instance = Yes
@@ -75,10 +89,13 @@ if [ ! -f ~/.reticulum/config ]; then
 
 [interfaces]
 
+  # RNode LoRa interface.
+  # Port is typically /dev/ttyACM0 (RAK4631, Heltec v3) or /dev/ttyUSB0 (some RNode variants).
+  # Check with: ls /dev/tty{ACM,USB}*
   [[RNode RPI]]
     type = RNodeInterface
     interface_enabled = True
-    port = /dev/ttyACM0
+    port = $RNODE_PORT
     frequency = 869525000
     bandwidth = 250000
     txpower = 14
