@@ -721,10 +721,10 @@ html, body {
 </head>
 <body>
 <div id="container">
-    <iframe id="sdr-frame" src="http://10.42.0.1:8080" title="SDR"></iframe>
+    <iframe id="sdr-frame" title="SDR"></iframe>
     <div id="divider"></div>
     <div id="right-col">
-        <iframe id="rns-frame" src="http://10.42.0.1:8082" title="RNS Live"></iframe>
+        <iframe id="rns-frame" title="RNS Live"></iframe>
         <div id="noise-panel">
             <div id="noise-titlebar">
                 <span>RNode Noise Floor &#8212; 5 min</span>
@@ -795,6 +795,12 @@ const chart = new Chart(ctx, {
 });
 
 const wsHost = window.location.hostname;
+
+// Set iframe sources dynamically so the combined page works whether accessed
+// via the hotspot IP (10.42.0.1) or any other IP (e.g. ethernet LAN address).
+document.getElementById('sdr-frame').src = 'http://' + wsHost + ':8080';
+document.getElementById('rns-frame').src = 'http://' + wsHost + ':8082';
+
 let noiseWs;
 function connectNoise() {
     noiseWs = new WebSocket('ws://' + wsHost + ':8083');
