@@ -1,0 +1,1 @@
+{"rustc":18276270781310494267,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[857979250431893282,"build_script_build",false,11940921467455180026]],"local":[{"RerunIfChanged":{"output":"arm-unknown-linux-musleabihf/release/build/typenum-024802d36b784e5f/output","paths":["tests"]}}],"rustflags":[],"config":0,"compile_kind":0}

@@ -69,18 +69,15 @@ fi
 # Build the project
 # ---------------------------------------------------------------------------
 echo "[6/6] Building sdr-ws..."
-cd "$HOME/pi-mesh-node/sdr-ws"
+cd "$HOME/sdr-ws"
 
 # Ensure src/index.html exists (copy from sdr-index.html if needed)
 if [ ! -f src/index.html ]; then
-    # sdr-index.html from the repo should already be here as src/index.html
-    # If cloned correctly it will be at ~/pi-mesh-node/sdr-ws/src/index.html
-    if [ -f "$HOME/pi-mesh-node/sdr-ws/src/index.html" ]; then
-        cp "$HOME/pi-mesh-node/sdr-ws/src/index.html" src/index.html
-        echo "    Copied from repo"
+    if [ -f "$HOME/Downloads/sdr-index.html" ]; then
+        cp "$HOME/Downloads/sdr-index.html" src/index.html
+        echo "    Copied sdr-index.html -> src/index.html"
     else
-        echo "ERROR: src/index.html missing."
-        echo "Make sure you cloned the repo: git clone https://github.com/fotografm/pi-mesh-node.git ~/pi-mesh-node"
+        echo "ERROR: src/index.html missing. Copy sdr-index.html to ~/sdr-ws/src/index.html first."
         exit 1
     fi
 fi
@@ -89,6 +86,6 @@ cargo build --release --target arm-unknown-linux-musleabihf
 
 echo ""
 echo "=== Build complete ==="
-echo "Binary: $HOME/pi-mesh-node/sdr-ws/target/arm-unknown-linux-musleabihf/release/sdr-ws"
+echo "Binary: $HOME/sdr-ws/target/arm-unknown-linux-musleabihf/release/sdr-ws"
 echo ""
 echo "Next step: run setup-pi-1.sh on the Pi, then deploy with setup-deploy.sh"

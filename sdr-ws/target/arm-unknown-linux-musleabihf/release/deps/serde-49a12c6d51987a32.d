@@ -1,0 +1,14 @@
+/home/user/pi-mesh-node/sdr-ws/target/arm-unknown-linux-musleabihf/release/deps/serde-49a12c6d51987a32.d: /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/user/pi-mesh-node/sdr-ws/target/arm-unknown-linux-musleabihf/release/build/serde-c80551cd8e4e2ddb/out/private.rs
+
+/home/user/pi-mesh-node/sdr-ws/target/arm-unknown-linux-musleabihf/release/deps/libserde-49a12c6d51987a32.rlib: /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/user/pi-mesh-node/sdr-ws/target/arm-unknown-linux-musleabihf/release/build/serde-c80551cd8e4e2ddb/out/private.rs
+
+/home/user/pi-mesh-node/sdr-ws/target/arm-unknown-linux-musleabihf/release/deps/libserde-49a12c6d51987a32.rmeta: /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/user/pi-mesh-node/sdr-ws/target/arm-unknown-linux-musleabihf/release/build/serde-c80551cd8e4e2ddb/out/private.rs
+
+/home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs:
+/home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs:
+/home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs:
+/home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs:
+/home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs:
+/home/user/pi-mesh-node/sdr-ws/target/arm-unknown-linux-musleabihf/release/build/serde-c80551cd8e4e2ddb/out/private.rs:
+
+# env-dep:OUT_DIR=/home/user/pi-mesh-node/sdr-ws/target/arm-unknown-linux-musleabihf/release/build/serde-c80551cd8e4e2ddb/out

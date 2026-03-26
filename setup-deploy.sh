@@ -26,11 +26,9 @@ check_file() {
 }
 
 check_file "$HOME/sdr-ws/target/arm-unknown-linux-musleabihf/release/sdr-ws"
-check_file "$HOME/pi-mesh-node/rns-web.py"
-check_file "$HOME/pi-mesh-node/rns-index.html"
-check_file "$HOME/pi-mesh-node/landing-server.py"
-check_file "$HOME/pi-mesh-node/landing.html"
-check_file "$HOME/pi-mesh-node/notes.html"
+check_file "$HOME/Downloads/rns-web.py"
+check_file "$HOME/Downloads/rns-index.html"
+# sdr-index.html is compiled into the binary — no need to deploy separately
 
 if [ "$MISSING" -eq 1 ]; then
     echo ""
@@ -54,33 +52,24 @@ scp "$HOME/sdr-ws/target/arm-unknown-linux-musleabihf/release/sdr-ws" \
     "$PI:~/sdr-ws"
 echo "  Copied: sdr-ws binary"
 
-scp "$HOME/pi-mesh-node/rns-web.py" "$PI:~/rns-web.py"
+scp "$HOME/Downloads/rns-web.py" "$PI:~/rns-web.py"
 echo "  Copied: rns-web.py"
 
-scp "$HOME/pi-mesh-node/rns-index.html" "$PI:~/rns-index.html"
+scp "$HOME/Downloads/rns-index.html" "$PI:~/rns-index.html"
 echo "  Copied: rns-index.html"
-
-scp "$HOME/pi-mesh-node/landing-server.py" "$PI:~/landing-server.py"
-echo "  Copied: landing-server.py"
-
-scp "$HOME/pi-mesh-node/landing.html" "$PI:~/landing.html"
-echo "  Copied: landing.html"
-
-scp "$HOME/pi-mesh-node/notes.html" "$PI:~/notes.html"
-echo "  Copied: notes.html"
 
 # ---------------------------------------------------------------------------
 # Restart services
 # ---------------------------------------------------------------------------
 echo "[4/4] Restarting services..."
-ssh "$PI" "sudo systemctl start sdr-ws && sudo systemctl restart rns-web rns-map landing"
+ssh "$PI" "sudo systemctl start sdr-ws && sudo systemctl restart rns-web"
 
 sleep 3
 
 echo ""
 echo "=== Deploy complete ==="
 echo ""
-ssh "$PI" "sudo systemctl status sdr-ws rns-web rns-map landing rnsd --no-pager | grep -E 'Active|●'"
+ssh "$PI" "sudo systemctl status sdr-ws rns-web --no-pager | grep -E 'Active|●'"
 echo ""
 echo "Open in browser (on hotspot):"
 echo "  http://10.42.0.1:8080  — SDR waterfall"

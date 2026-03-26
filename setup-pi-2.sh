@@ -2,7 +2,7 @@
 # setup-pi-2.sh
 # Run on the Pi AFTER the first reboot (I2C must be active).
 # Covers: RTC detection and sync, Python venv, Reticulum config,
-#         xterm.js download, rns-map clone, sudoers, systemd services.
+#         xterm.js download, sudoers, systemd services.
 # After this script completes, reboot the Pi then run setup-pi-3.sh.
 set -e
 
@@ -11,7 +11,7 @@ echo "=== Pi Setup Part 2 of 3 ==="
 # ---------------------------------------------------------------------------
 # Verify I2C is up and RTC is present
 # ---------------------------------------------------------------------------
-echo "[1/10] Checking I2C and RTC..."
+echo "[1/8] Checking I2C and RTC..."
 if [ ! -e /dev/i2c-1 ]; then
     echo "ERROR: /dev/i2c-1 not found. Did you reboot after setup-pi-1.sh?"
     exit 1
@@ -39,7 +39,7 @@ echo "    RTC time: $(sudo hwclock -r)"
 # ---------------------------------------------------------------------------
 # Python venv for Reticulum/LXMF
 # ---------------------------------------------------------------------------
-echo "[2/10] Creating Python venv..."
+echo "[2/8] Creating Python venv..."
 if [ ! -d ~/rns-web-venv ]; then
     python3 -m venv ~/rns-web-venv
     echo "    Created ~/rns-web-venv"
@@ -61,25 +61,11 @@ echo "    Packages installed:"
 # ---------------------------------------------------------------------------
 # Reticulum config
 # ---------------------------------------------------------------------------
-echo "[3/10] Writing Reticulum config..."
+echo "[3/8] Writing Reticulum config..."
 mkdir -p ~/.reticulum
 
 if [ ! -f ~/.reticulum/config ]; then
-    # Detect RNode port — RAK4631 and Heltec v3 typically appear as ttyACM0,
-    # but some RNode devices use ttyUSB0. Check with: ls /dev/tty{ACM,USB}*
-    echo "    Checking for RNode device port..."
-    if [ -e /dev/ttyACM0 ]; then
-        RNODE_PORT="/dev/ttyACM0"
-    elif [ -e /dev/ttyUSB0 ]; then
-        RNODE_PORT="/dev/ttyUSB0"
-    else
-        RNODE_PORT="/dev/ttyACM0"
-        echo "    WARNING: No ttyACM0 or ttyUSB0 found. RNode may not be connected."
-        echo "    Edit ~/.reticulum/config after setup to set the correct port."
-    fi
-    echo "    Using RNode port: $RNODE_PORT"
-
-    cat > ~/.reticulum/config << EOF
+    cat > ~/.reticulum/config << 'EOF'
 [reticulum]
   enable_transport = True
   share_instance = Yes
@@ -89,13 +75,10 @@ if [ ! -f ~/.reticulum/config ]; then
 
 [interfaces]
 
-  # RNode LoRa interface.
-  # Port is typically /dev/ttyACM0 (RAK4631, Heltec v3) or /dev/ttyUSB0 (some RNode variants).
-  # Check with: ls /dev/tty{ACM,USB}*
   [[RNode RPI]]
     type = RNodeInterface
     interface_enabled = True
-    port = $RNODE_PORT
+    port = /dev/ttyACM0
     frequency = 869525000
     bandwidth = 250000
     txpower = 14
@@ -116,7 +99,7 @@ fi
 # ---------------------------------------------------------------------------
 # Download xterm.js files
 # ---------------------------------------------------------------------------
-echo "[4/10] Downloading xterm.js..."
+echo "[4/8] Downloading xterm.js..."
 
 download_if_missing() {
     local dest="$1"
@@ -151,21 +134,9 @@ download_if_missing ~/addon-fit.min.js \
     1000
 
 # ---------------------------------------------------------------------------
-# Clone rns-map (separate repo, used by rns-map.service)
-# ---------------------------------------------------------------------------
-echo "[5/10] Cloning rns-map..."
-if [ ! -d ~/rns-map ]; then
-    git clone https://github.com/fotografm/rns-map.git ~/rns-map
-    echo "    Cloned to ~/rns-map"
-else
-    echo "    ~/rns-map already exists — pulling latest..."
-    git -C ~/rns-map pull
-fi
-
-# ---------------------------------------------------------------------------
 # sudoers rule for web UI shutdown button
 # ---------------------------------------------------------------------------
-echo "[6/10] Adding sudoers rule for shutdown button..."
+echo "[5/8] Adding sudoers rule for shutdown button..."
 SUDOERS_FILE=/etc/sudoers.d/sdr-shutdown
 if [ ! -f "$SUDOERS_FILE" ]; then
     echo "user ALL=(ALL) NOPASSWD: /sbin/shutdown" | sudo tee "$SUDOERS_FILE" > /dev/null
@@ -178,24 +149,7 @@ fi
 # ---------------------------------------------------------------------------
 # systemd services
 # ---------------------------------------------------------------------------
-echo "[7/10] Installing systemd services..."
-
-sudo tee /etc/systemd/system/landing.service > /dev/null << 'EOF'
-[Unit]
-Description=raspi20 Landing Page Server
-After=network.target
-
-[Service]
-Type=simple
-User=user
-ExecStart=/usr/bin/python3 /home/user/landing-server.py
-WorkingDirectory=/home/user
-Restart=on-failure
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
-EOF
+echo "[6/8] Installing systemd services..."
 
 sudo tee /etc/systemd/system/rnsd.service > /dev/null << 'EOF'
 [Unit]
@@ -247,36 +201,16 @@ RestartSec=5
 WantedBy=multi-user.target
 EOF
 
-sudo tee /etc/systemd/system/rns-map.service > /dev/null << 'EOF'
-[Unit]
-Description=RNS Live Network Map
-After=network.target rnsd.service
-
-[Service]
-Type=simple
-User=user
-WorkingDirectory=/home/user/rns-map
-ExecStart=/home/user/rns-web-venv/bin/python rns_map.py
-Restart=on-failure
-RestartSec=10
-StandardOutput=journal
-StandardError=journal
-SyslogIdentifier=rns-map
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
 sudo systemctl daemon-reload
-sudo systemctl enable landing rnsd rns-web rns-map sdr-ws
+sudo systemctl enable rnsd rns-web sdr-ws
 echo "    Services installed and enabled"
 
 # ---------------------------------------------------------------------------
 # Check required files are present before starting services
 # ---------------------------------------------------------------------------
-echo "[8/10] Checking deployed files..."
+echo "[7/8] Checking deployed files..."
 MISSING=0
-for f in ~/sdr-ws ~/rns-web.py ~/rns-index.html ~/landing-server.py ~/landing.html ~/notes.html; do
+for f in ~/sdr-ws ~/rns-web.py ~/rns-index.html; do
     if [ ! -f "$f" ]; then
         echo "    MISSING: $f"
         MISSING=1
@@ -289,19 +223,15 @@ if [ "$MISSING" -eq 1 ]; then
     echo ""
     echo "WARNING: Some files missing. Run setup-deploy.sh from the desktop first,"
     echo "then start services manually:"
-    echo "  sudo systemctl start landing rnsd rns-web rns-map sdr-ws"
+    echo "  sudo systemctl start rnsd rns-web sdr-ws"
 else
-    echo "[9/10] Starting services..."
-    sudo systemctl start landing
+    echo "[8/8] Starting services..."
     sudo systemctl start rnsd
     sleep 2
     sudo systemctl start rns-web
-    sudo systemctl start rns-map
     sudo systemctl start sdr-ws
     echo "    Services started"
 fi
-
-echo "[10/10] Done."
 
 echo ""
 echo "=== Part 2 complete ==="

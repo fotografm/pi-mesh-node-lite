@@ -1,0 +1,14 @@
+/home/user/pi-mesh-node/sdr-ws/target/arm-unknown-linux-musleabihf/release/deps/thiserror-b7d51af35cd3a8e6.d: /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/lib.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/aserror.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/display.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/var.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/private.rs /home/user/pi-mesh-node/sdr-ws/target/arm-unknown-linux-musleabihf/release/build/thiserror-b682a4a3b96b7638/out/private.rs
+
+/home/user/pi-mesh-node/sdr-ws/target/arm-unknown-linux-musleabihf/release/deps/libthiserror-b7d51af35cd3a8e6.rlib: /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/lib.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/aserror.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/display.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/var.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/private.rs /home/user/pi-mesh-node/sdr-ws/target/arm-unknown-linux-musleabihf/release/build/thiserror-b682a4a3b96b7638/out/private.rs
+
+/home/user/pi-mesh-node/sdr-ws/target/arm-unknown-linux-musleabihf/release/deps/libthiserror-b7d51af35cd3a8e6.rmeta: /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/lib.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/aserror.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/display.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/var.rs /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/private.rs /home/user/pi-mesh-node/sdr-ws/target/arm-unknown-linux-musleabihf/release/build/thiserror-b682a4a3b96b7638/out/private.rs
+
+/home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/lib.rs:
+/home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/aserror.rs:
+/home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/display.rs:
+/home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/var.rs:
+/home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18/src/private.rs:
+/home/user/pi-mesh-node/sdr-ws/target/arm-unknown-linux-musleabihf/release/build/thiserror-b682a4a3b96b7638/out/private.rs:
+
+# env-dep:OUT_DIR=/home/user/pi-mesh-node/sdr-ws/target/arm-unknown-linux-musleabihf/release/build/thiserror-b682a4a3b96b7638/out
